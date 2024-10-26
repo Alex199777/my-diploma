@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_content %}
+<div class="row">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-5">
+                <div class=" bg-white p-4 mb-4 mx-2 rounded custom-shadow">
+                    <h3 class="text-center mb-4">Профиль пользователя</h3>
+                    <form action="{% url 'user_profile' %} " method="post" >
+                        {% csrf_token %}
+                        <div class="row">
+
+                             <div class="col-md-12 mb-3">
+                                <label for="id_username" class="form-label">Имя:</label>
+                                <input type="text" class="form-control" id="id_username"
+                                    name="username"
+                                    placeholder="Введите ваше имя"
+                                    value="{{ form.username.value }}"
+                                    required>
+
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="id_last_name" class="form-label">Фамилия:</label>
+                                <input type="text" class="form-control" id="id_last_name"
+                                    name="last_name"
+                                    placeholder="Введите вашу фамилию"
+                                    value="{{ form.last_name.value }}"
+                                    required>
+
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="id_email" class="form-label">Email:</label>
+                                <input type="email" class="form-control" id="id_email"
+                                    name="email"
+                                    placeholder="Введите ваш email"
+                                    value="{{ form.email.value }}"
+                                    required>
+
+                            </div>
+                        </div>
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </form>
+
+        <a href="{% url 'user_cart' %}" >
+                <button type="submit" class="btn btn-primary" >
+                    Моя корзина
+                </button>
+        </a>
+
+    </div>
+</div>
+
+    <div class="container mt-5">
+        <h2 style="color:white;">История заказов</h2>
+        <div class="accordion" id="orderHistoryAccordion">
+            {% for order in orders %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading{{ order.id }}">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ order.id }}" aria-expanded="true" aria-controls="collapse{{ order.id }}">
+                        Заказ #{{ order.id }} - Статус: {{ order.status }} - Способ оплаты: {% if order.pay == False %} Онлайн {% else %}при получении {% endif %}
+                    </button>
+                </h2>
+                <div id="collapse{{ order.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ order.id }}" data-bs-parent="#orderHistoryAccordion">
+                    <div class="accordion-body">
+                        <p><strong>Телефон:</strong> +375{{ order.phone_number }}</p>
+                        <ul class="list-group">
+                            {% for item in order.orderitem_set.all %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ item.product }} - {{ item.quantity }} шт.
+                                <span class="badge bg-primary rounded-pill">{{ item.price }} BYN</span>
+                            </li>
+                             <p class="mt-3"><strong>Общая сумма:</strong> {{ item.product_price }} BYN</p>
+                            {% endfor %}
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

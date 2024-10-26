@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_content %}
+<h1>{{ project.title }}</h1>
+    <div class="row">
+    <div class="col-md-4">
+        <img src="{{ good.image.url }}" alt="" width="90%">
+    </div>
+    <div class="col-md-4" style="background-color: white;">
+        <h1>{{ good.name }}</h1>
+        <p> {{good.description}}:</p>
+        <br>
+        <br>
+        <h5>Категория:</h5>
+        <p>{{ good.category }}</p>
+        <br>
+        <h5>Артикул товара:00{{ good.id }}</h5>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <p>Цена: <strong>{{ good.discount_price }}BYN </strong></p>
+        <br>
+        <p><a href="{% url 'cart_add'  good.id %}" class="btn-add-to-cart">
+                <button type="button" class="btn btn-success">
+                    В корзину
+                </button>
+        </p>
+    </div>
+</div>
+
+{% endblock %}

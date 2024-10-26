@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_content %}
+<div class="row">
+    <div class="container ">
+            <div class="col-md-4 bg-white p-4 mb-2 mx-2 ">
+                <h4 class="text-center mb-2">Регистрация</h4>
+                <form action="{% url 'user_registration' %}" method="post">
+                    {% csrf_token %}
+                    {{ form }}
+                    <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                </form>
+            </div>
+    </div>
+</div>
+
+{% endblock %}

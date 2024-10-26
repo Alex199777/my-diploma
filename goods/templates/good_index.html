@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load static %}
+{% load goods_tags %}
+{% block page_content %}
+<style>
+/* Контейнер для карточек товаров */
+.product-card-container {
+    display: flex; /* Используем flex для выравнивания карточек */
+    flex-wrap: wrap; /*  карточки переносятся на новую строку при необходимости */
+    justify-content: space-around; /* Распределяем карточки  по ширине контейнера */
+    width: 90%; /* Устанавливаем ширину контейнера на 90%  */
+}
+
+/* Элемент для отображения скидки */
+.discount-badge {
+    position: absolute; /* Позиционируем элемент относительно родительского контейнера product-card-container */
+    top: 10px; /* Располагаем элемент на 10 п ниже верхнего края  */
+    right: 10px; /* Располагаем элемент на 10 п левее правого края  */
+    background-color: yellow; /*  желтый цвет фона для элемента */
+    color: red; /*  красный цвет текста для элемента */
+    font-size: 14px; /*  размер шрифта для текста элемента */
+    font-weight: bold; /*  текст жирным */
+}
+
+</style>
+<!-- Пример отдельной кнопки danger -->
+<div class="btn-group">
+  <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+    Фильтры
+  </button>
+  <ul class="dropdown-menu">
+      <form action=" {% if request.GET.q %} {% url 'good_search'  %} {% else %}{% url 'good_index' slug_url %} {% endif %}" method="get" >
+          <div class="form-check">
+              {% if request.GET.q %}
+                <input type="hidden" name="q" value="{{ request.GET.q }}">
+              {% endif %}
+              <input class="form-check-input" type="checkbox"  id="flexCheckDefault" name="on_sale" value="on" {% if request.GET.on_sale == 'on' %}checked {% endif %} >
+              <label class="form-check-label" for="flexCheckDefault">
+                Акция
+              </label>
+          </div>
+
+          <p>Сортировать:</p>
+          <div class="form-check">
+              <input class="form-check-input" type="radio" name="order_by" value="default" id="flexCheckDefault" checked>
+              <label class="form-check-label" for="flexCheckDefault">
+                По умолчанию
+              </label>
+          </div>
+          <div class="form-check">
+              <input class="form-check-input" type="radio"  name="order_by"  id="flexCheckDefault" value="-price" {% if request.GET.order_by == '-price' %}checked {% endif %} >
+              <label class="form-check-label" for="flexCheckDefault">
+                Цена по убыванию
+              </label>
+          </div>
+          <div class="form-check">
+              <input class="form-check-input" type="radio" name="order_by" id="flexCheckDefault" value="price" {% if request.GET.order_by == 'price' %}checked {% endif %} >
+              <label class="form-check-label" for="flexCheckDefault">
+                Цена по возрастанию
+              </label>
+          </div>
+          <button type="submit" class="btn btn-info">Применить</button>
+      </form>
+  </ul>
+</div>
+
+
+<div class="product-card-container">
+    {% for good in goods %}
+        <div class="col-lg-3 col-md-6 p-4">
+            <div class="card border-primary rounded custom-shadow">
+                {% if good.image %}
+                    <img src="{{ good.image.url }}" class="card-img-top" >
+                {% endif %}
+                <div class="card-body">
+                    <a href="{% url 'good_detail' good.slug %}">
+                        <p class="card-title">{{good.name}}</p>
+                    </a>
+                    <p class="card-text text-truncate">Категория:{{ good.category }}</p>
+                    <p class="product-id">id:00{{ good.id }}</p>
+                    <div class="d-flex justify-content-between">
+                        {% if good.discount %}
+                        <p><s>{{ good.price }}BYN</s></p>
+                        <p><strong>{{good.discount_price}}BYN</strong></p>
+                        <p><span class="discount-badge">Скидка {{ good.discount }}%</span></p>
+                        {% else %}
+                            <p><strong>{{ good.price }}BYN </strong></p>
+                        {% endif %}
+                        <a href="{% url 'cart_add'  good.id %}" class="btn-add-to-cart">
+                            <button type="button" class="btn btn-success">
+                                В корзину
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% endfor %}
+</div>
+<nav aria-label="Пример навигации по страницам">
+  <ul class="pagination justify-content-center">
+    <li class="page-item {% if not goods.has_previous %} disabled {% endif %}">
+      <a class="page-link"
+         href="{% if goods.has_previous %}?{%  change_params page=goods.previous_page_number %}
+    {% endif %}">Предыдущая
+      </a>
+    </li>
+      {% for page in goods.paginator.page_range %}
+        <li class="page-item"><a class="page-link" href="?{% change_params page=page %}">{{ page }}</a></li>
+      {% endfor %}
+
+    <li class="page-item {% if not goods.has_next %} disabled {% endif %}">
+      <a class="page-link" href="{% if goods.has_next %}?{%  change_params page=goods.next_page_number %}
+
+    {% endif %}">Следующая</a>
+    </li>
+  </ul>
+</nav>
+
+{% endblock %}

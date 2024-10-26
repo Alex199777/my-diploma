@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+{% load cart_tags %}
+{% block page_content %}
+<div class="container  bg-white">
+    {% user_carts request as carts %}
+    {% for cart in carts %}
+    <div class="card mb-3  ">
+        <div class="card-footer">
+            <h5 class="float-left">Сумма: <strong>{{ carts.total_price }} BYN</strong></h5>
+        </div>
+    </div>
+    {% endfor %}
+    <div>
+        <div class="card-body">
+            <form action="{% url 'create_order' %}" method="post">
+                {% csrf_token %}
+                <div class="col-md-2">
+                    <label for="id_username" class="form-label">Имя:</label>
+                    <input type="text" class="form-control" id="id_username" value="{{ form.initial.username }}" name="username" required>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label for="id_last_name" class="form-label">Фамилия:</label>
+                    <input type="text" class="form-control" id="id_last_name" value="{{ form.initial.last_name }}" name="last_name" required>
+                </div>
+                <div class="col-md-2">
+                    <label for="id_phone_number" class="form-label">Номер телефона*:</label>
+                    <input type="text" class="form-control" id="id_phone_number" name="phone_number" placeholder="(+375)-**-***-**-**" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Способ оплаты: </label>
+                    <br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="pay" id="id_pay" value="0" checked>
+                        <label class="form-check-label" for="id_pay">Оплата онлайн</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="pay" id="id_pay" value="1">
+                        <label class="form-check-label" for="id_pay">Наличными/картой при получении</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Оформить заказ</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
